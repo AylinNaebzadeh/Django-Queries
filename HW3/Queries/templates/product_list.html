@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+</head>
+<body>
+    {% regroup object_list by category as product_list %}
+
+    <ul>
+        {% for product_category in product_list %}
+            <li>{{ product_category.grouper }}
+                <ul>
+                {% for product in product_category.list %}
+                    <li>{{ product.product_name }}</li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
