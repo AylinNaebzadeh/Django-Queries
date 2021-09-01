@@ -4,6 +4,7 @@ from .models import *
 from django.http import HttpResponse , JsonResponse
 from django.utils import timezone
 import datetime
+from django.views import generic
 # Create your views here.
 
 def all_customers_view(request):
@@ -13,10 +14,6 @@ def all_customers_view(request):
     }
     return JsonResponse(json_object)
 
-# d1 = datetime.strptime(self.current_date, "%Y-%m-%d")
-# d2 = datetime.strptime(self.dob, "%Y-%m-%d")
-
-# current_age = (d1 - d2).year
 
 
 def last_15_days(request):
@@ -32,7 +29,6 @@ def last_15_days(request):
     return HttpResponse(orders[0:int(orders_count)])
 
 
-# گزارشی تهیه کنید که اطلاعات مربوط به مشتریانی را که در یک بازه زمانی مشخص (مثلا 1998-01-01 تا 2000-01-01) خرید داشته‌اند، نمایش دهد.
 def customers_in_an_specific_period(request):
     ordersquery = Order.objects.filter(order_time__gte = datetime.date(1998 ,1,1),
                                         order_time__lte = datetime.date(2000,1,1))
@@ -51,6 +47,27 @@ def all_employees_view(request):
     for item in all_employees:
         print(item)
     return HttpResponse(all_employees)
+
+
+def each_customer_ordered_products(request):
+    customer_ordered_products =  OrderDetail.objects.filter(order__customer__user__first_name = 'Aylin')
+    return HttpResponse(customer_ordered_products)
+
+
+class CatagoryList(generic.ListView):
+    template_name = 'product_list.html'
+    def get_queryset(self) :
+        return Product.objects.all().select_related('category')
+
+# https://stackoverflow.com/questions/6436937/query-for-top-x-elements-in-django
+# https://stackoverflow.com/questions/5123839/fastest-way-to-get-the-first-object-from-a-queryset-in-django
+
+# last_ten = Messages.objects.filter(since=since).order_by('-id')[:10]
+# last_ten_in_ascending_order = reversed(last_ten)
+def customers_with_most_expensive_products(request):
+    pass
+
+
 
 
 

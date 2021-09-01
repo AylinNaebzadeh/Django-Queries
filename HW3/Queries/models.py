@@ -1,15 +1,19 @@
 from django.db import models
-
+from django.urls import reverse
 
 # Create your models here.
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=15)
     description = models.TextField(null=True, blank=True)
+    # slug = models.SlugField(max_length=200, unique=True )
 
 
     def __str__(self):
         return f"ID: {self.category_id}, {self.category_name}"
+
+    # def get_absolute_url(self):
+    #     return reverse("products:tag_index", kwargs={"slug": self.slug})
 
 
 class User(models.Model):
@@ -61,11 +65,15 @@ class Employee(models.Model):
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=40)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name="product_categories" , on_delete=models.CASCADE)
     unit_price = models.FloatField()
+    # slug = models.SlugField(unique=True )
 
     def __str__(self):
         return f"ID: {self.product_id}, {self.product_name}: {self.unit_price}"
+    
+    # def get_absolute_url(self):
+    #     return reverse("products:detail", kwargs={"slug": self.slug})
 
 
 class Order(models.Model):
