@@ -5,6 +5,7 @@ from django.http import HttpResponse , JsonResponse
 from django.utils import timezone
 import datetime
 from django.views import generic
+from django.db.models import Count , F , Q
 # Create your views here.
 
 def all_customers_view(request):
@@ -50,8 +51,18 @@ def all_employees_view(request):
 
 
 def each_customer_ordered_products(request):
-    customer_ordered_products =  OrderDetail.objects.filter(order__customer__user__first_name = 'Aylin')
+    customer_ordered_products =  OrderDetail.objects.select_related('product' , 'order__customer')
+
     return HttpResponse(customer_ordered_products)
+
+
+def each_post_category(request):
+    products_category = Product.objects.all().select_related('category').annotate( pro_cat = F('category__category_name'))
+    for c in products_category:
+        print(c)
+    # *********************************************************************************************************************
+    categories = Product.objects.annotate(value=F('product_name') ,category_name=F('category') , label=F('product_name') ).values('category__category_name' , 'value' , 'label' , 'product_name')
+    return HttpResponse(categories)
 
 
 class CatagoryList(generic.ListView):
@@ -59,13 +70,12 @@ class CatagoryList(generic.ListView):
     def get_queryset(self) :
         return Product.objects.all().select_related('category')
 
-# https://stackoverflow.com/questions/6436937/query-for-top-x-elements-in-django
-# https://stackoverflow.com/questions/5123839/fastest-way-to-get-the-first-object-from-a-queryset-in-django
 
-# last_ten = Messages.objects.filter(since=since).order_by('-id')[:10]
-# last_ten_in_ascending_order = reversed(last_ten)
-def customers_with_most_expensive_products(request):
-    pass
+def five_customers_with_most_expensive_products(request):
+    q = OrderDetail.objects.all().annotate(product_price = F('product__unit_price')).order_by('-product_price')[:5]
+    return HttpResponse(q)
+
+
 
 
 
