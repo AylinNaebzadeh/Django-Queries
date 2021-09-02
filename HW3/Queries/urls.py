@@ -11,6 +11,10 @@ urlpatterns = [
     path('customersincertainperiod/' , customers_in_an_specific_period),
     path('eachcustomerorderedproducts/' , each_customer_ordered_products),
     path('tagsandproducts/' , CatagoryList.as_view()),
-    path('eachproductscategory/',each_post_category),
+    path('eachproductscategory/',each_product_category),
     path('fivemostexpensive/' , five_customers_with_most_expensive_products),
+    path('juneorders/' , orders_in_june_2007),
+    path('lastorderincurmonth/' , last_order_in_recent_month),
+    path('morehtan10000/' , orders_with_more_than_10000_cost),
+    path('feborderd/' , orders_in_12_Feb_2007),
 ]

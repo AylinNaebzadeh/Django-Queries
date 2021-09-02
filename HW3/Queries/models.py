@@ -47,9 +47,13 @@ class Customer(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     contact_name = models.CharField(max_length=30, unique=True)
     contact_title = models.CharField(max_length=30, null=True)
-
+    ORDER_STATES = (
+        ('YES' , 'yes'),
+        ('NO' , 'no'),
+    )
+    has_ordered_or_not = models.CharField(max_length=10 , null=True , blank=True , choices=ORDER_STATES)
     def __str__(self):
-        return f"User {self.user.__str__()}  has ordered a ### from {self.company.company_name} company.\n"
+        return f"User {self.user.__str__()} \ {self.has_ordered_or_not} \ {self.company.company_name} company.\n"
 
 
 class Employee(models.Model):
@@ -67,6 +71,7 @@ class Product(models.Model):
     product_name = models.CharField(max_length=40)
     category = models.ForeignKey(Category, related_name="product_categories" , on_delete=models.CASCADE)
     unit_price = models.FloatField()
+    Inventory = models.IntegerField(default=100)
     # slug = models.SlugField(unique=True )
 
     def __str__(self):

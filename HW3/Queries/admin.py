@@ -40,7 +40,7 @@ admin.site.register(Company, CompanyAdmin)
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['customer_id', 'full_name', 'company_name']
+    list_display = ['customer_id', 'full_name', 'company_name' , 'has_ordered_or_not']
     list_filter = ['company']
 
     def full_name(self, obj):
