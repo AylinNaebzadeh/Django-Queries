@@ -17,4 +17,7 @@ urlpatterns = [
     path('lastorderincurmonth/' , last_order_in_recent_month),
     path('morehtan10000/' , orders_with_more_than_10000_cost),
     path('feborderd/' , orders_in_12_Feb_2007),
+    path('morethanaverage/', customers_with_cost_more_than_average),
+    path('untilljune/' , customers_did_not_have_order_untill_june),
+    path('discount/' , discount),
 ]
