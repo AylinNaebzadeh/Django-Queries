@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Avg
 from django.db.models.expressions import Value
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -6,7 +7,7 @@ from django.http import HttpResponse , JsonResponse
 from django.utils import timezone
 import datetime
 from django.views import generic
-from django.db.models import Count , F , Q
+from django.db.models import Count , F , Q , When , Case
 # Create your views here.
 
 def all_customers_view(request):
@@ -102,10 +103,11 @@ def orders_in_12_Feb_2007(request):
 
     return HttpResponse(feb_orders)
 
+# June 2019
 def customers_did_not_have_order_untill_june(request):
-    # ????????????????????
-    pass
-
+    first_order_date = Order.objects.get(pk = 1).order_time
+    queryset_without_order = OrderDetail.objects.exclude(order__order_time__gte = first_order_date , order__order_time__lte = datetime.date(2021 ,9 ,1 )).annotate(customer = F('order__customer__user__first_name')).values('customer')
+    return HttpResponse(queryset_without_order)
 
 def yes_no_in_Feb_12_2007(request):
     feb_orders = OrderDetail.objects.filter(order__order_time__year = '2021' , 
@@ -115,6 +117,25 @@ def yes_no_in_Feb_12_2007(request):
     return HttpResponse(feb_orders)
 
 
+def customers_with_cost_more_than_average(request):
+    a = Product.objects.all()
+    Avg = sum([x.unit_price for x in a]) / len(a)  # -->1168.875
+    # avg = Product.objects.aggregate(Avg('unit_price')).values()
+    customers = OrderDetail.objects.annotate(total_cost = F('unit_price') * F('quantity') , customer_name = F('order__customer__user__first_name')).filter(total_cost__gt = Avg).values('customer_name')
+    return HttpResponse(customers)
+
+
+
+def discount(request):
+    final_price = Product.objects.annotate(
+        f_price = Case(
+            When(Inventory__lte = 30 , then=F('unit_price')),
+            When(Inventory__lte = 50 , Inventory__gt = 30 , then=F('unit_price') * 0.1),
+            When(Inventory__lte = 100 , Inventory__gt = 50 , then=F('unit_price') * 0.2),
+            When(Inventory__gte = 100 , then=F('unit_price') * 0.3),
+        )
+    ).values('f_price')
+    return HttpResponse(final_price)
 
 
 
